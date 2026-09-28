@@ -10,8 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write      # Permite que el workflow haga commit en el repo
+
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_S3_ACCESS_KEY: ${{ secrets.SUPABASE_S3_ACCESS_KEY }}
+      SUPABASE_S3_SECRET_KEY: ${{ secrets.SUPABASE_S3_SECRET_KEY }}
+      SUPABASE_S3_ENDPOINT: ${{ secrets.SUPABASE_S3_ENDPOINT }}
+      SUPABASE_S3_REGION: ${{ secrets.SUPABASE_S3_REGION }}
 
     steps:
       - name: Descargar el repositorio
@@ -30,6 +35,32 @@ jobs:
 
       - name: Respaldar datos
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f data.sql --use-copy --data-only
+
+      - name: Respaldar usuarios de Auth
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f auth.sql --schema auth --data-only
+
+      - name: Crear directorio de Storage
+        run: mkdir -p storage-backup
+
+      - name: Respaldar archivos de Storage
+        run: |
+          export AWS_ACCESS_KEY_ID="$SUPABASE_S3_ACCESS_KEY"
+          export AWS_SECRET_ACCESS_KEY="$SUPABASE_S3_SECRET_KEY"
+          export AWS_DEFAULT_REGION="$SUPABASE_S3_REGION"
+
+          for bucket in $(aws s3api list-buckets \
+            --endpoint-url "$SUPABASE_S3_ENDPOINT" \
+            --query 'Buckets[].Name' \
+            --output text); do
+
+            mkdir -p "storage-backup/$bucket"
+
+            aws s3 sync \
+              "s3://$bucket" \
+              "storage-backup/$bucket" \
+              --endpoint-url "$SUPABASE_S3_ENDPOINT"
+
+          done
 
       - name: Guardar el backup en el repositorio
         uses: stefanzweifel/git-auto-commit-action@v5
