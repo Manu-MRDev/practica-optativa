@@ -4,7 +4,7 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
--- \restrict hcPAYLTFHHTehCM56SO2HzAWd097cuLAoh4zciP64x5faQkvKbmFxO4EKbXiZJS
+-- \restrict aKA9SWuKViuWbTIw8lc9E2cQ04Cz0IaE6FOD2FkvrOONdMN1T3bcltwnBEGD2OU
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.11
@@ -238,6 +238,14 @@ COPY "storage"."buckets" ("id", "name", "owner", "created_at", "updated_at", "pu
 
 
 --
+-- Data for Name: bucket_lifecycle_states; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY "storage"."bucket_lifecycle_states" ("bucket_id", "generation", "next_run_at", "claim_id", "claim_until", "continuation", "last_started_at", "last_completed_at", "last_success_at", "last_result", "failure_count", "last_error", "updated_at") FROM stdin;
+\.
+
+
+--
 -- Data for Name: buckets_analytics; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
 --
 
@@ -250,6 +258,14 @@ COPY "storage"."buckets_analytics" ("name", "type", "format", "created_at", "upd
 --
 
 COPY "storage"."buckets_vectors" ("id", "type", "created_at", "updated_at") FROM stdin;
+\.
+
+
+--
+-- Data for Name: lifecycle_abandoned_artifacts; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
+--
+
+COPY "storage"."lifecycle_abandoned_artifacts" ("bucket_id", "key", "name", "version", "attempted_at") FROM stdin;
 \.
 
 
@@ -296,6 +312,6 @@ SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 1, false);
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict hcPAYLTFHHTehCM56SO2HzAWd097cuLAoh4zciP64x5faQkvKbmFxO4EKbXiZJS
+-- \unrestrict aKA9SWuKViuWbTIw8lc9E2cQ04Cz0IaE6FOD2FkvrOONdMN1T3bcltwnBEGD2OU
 
 RESET ALL;
